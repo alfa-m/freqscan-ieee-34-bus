@@ -20,7 +20,7 @@ dss.text("Buscoords BusCoords.dat")
 nomesLinhas = dss.lines.names
 nomesBarras = dss.circuit.buses_names
 nomesNos = dss.circuit.nodes_names
-s
+
 # Realiza a solução do fluxo de potência para obter os valores de magnitude e fase das tensões e correntes
 dss.solution.solve()
 
@@ -36,8 +36,8 @@ for i in range(len(nomesLinhas)):
 nomesMonitores = dss.monitors.names
 
 # Define o espectro de frequências a serem analisadas
-harmonicos = np.arange(1,26,2).tolist()
-dss.text("New spectrum.espectroharmonico numharm={} csvfile=espectro_harmonico_reduzido.csv".format(str(len(harmonicos))))
+harmonicos = np.arange(1,50,(0.1/60)).tolist()
+dss.text("New spectrum.espectroharmonico numharm={} csvfile=espectro_harmonico.csv".format(str(len(harmonicos))))
 
 # Cria loop de fonte de corrente harmônica
 for j in range(3,len(nomesNos)):
@@ -52,27 +52,22 @@ for j in range(3,len(nomesNos)):
 
     # Seleciona o modo de solução harmonic
     dss.text("Set mode=harmonic")
-
-    #matrixVmag = pd.DataFrame()
-    #matrixVmagpu = pd.DataFrame()
     matrixV = pd.DataFrame()
+    matrixY = pd.DataFrame()
 
-    print("Nó " + node)
     # Realiza a solução harmônica iterada
     for h in range(len(harmonicos)):
         dss.text("Set harmonic={}".format(harmonicos[h]))
         dss.solution.solve()
-        indice = "node_" + str(node) + "_harmonico_" + str(harmonicos[h]*60)
-        #matrixVmag[indice] = dss.circuit.buses_vmag
-        #matrixVmagpu[indice] = dss.circuit.buses_vmag_pu
+        indice = "node_" + str(node) + "_harmonico_" + str(round(harmonicos[h]*60,1))
         matrixV[indice] = dss.circuit.buses_volts
+        matrixY[indice] = dss.circuit.system_y
         dss.monitors.reset_all()
 
-        print("Harmonico " + str(harmonicos[h]*60))
+        print("Nó " + node + "Harmonico " + str(round(harmonicos[h]*60,1)))
 
-    #matrixVmag.to_csv("vmag_node_{}.csv".format(node))
-    #matrixVmagpu.to_csv("vmagpu_node_{}.csv".format(node))
     matrixV.to_csv("v_node_{}.csv".format(node))
+    matrixY.to_csv("y_node_{}.csv".format(node))
 
     # Desabilita a fonte de corrente atual
     fontesCorrente = dss.isources.names
@@ -83,13 +78,5 @@ nomesBarras_df = pd.DataFrame(nomesBarras)
 nomesNos_df = pd.DataFrame(nomesNos)
 nomesBarras_df.to_csv("lista_de_barras.csv")
 nomesNos_df.to_csv("lista_de_nos.csv")
-
-## Exporta todos os valores dos monitores
-#dss.text("Export monitors all")
-
-## Plota todos os monitores
-#for k in range(len(nomesMonitores)):
-#    monitor = nomesMonitores[k]
-#    dss.text("Plot monitor object={} channels=(1 3 5)".format(monitor))
 
 print("Análise harmônica finalizada")
