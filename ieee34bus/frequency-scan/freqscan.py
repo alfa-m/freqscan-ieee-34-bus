@@ -36,7 +36,7 @@ for i in range(len(nomesLinhas)):
 nomesMonitores = dss.monitors.names
 
 # Define o espectro de frequências a serem analisadas
-harmonicos = np.arange(1,50,(0.1/60)).tolist()
+harmonicos = np.arange(1,10.001,(0.1/60)).tolist()
 dss.text("New spectrum.espectroharmonico numharm={} csvfile=espectro_harmonico.csv".format(str(len(harmonicos))))
 
 # Cria loop de fonte de corrente harmônica
@@ -59,15 +59,17 @@ for j in range(3,len(nomesNos)):
     for h in range(len(harmonicos)):
         dss.text("Set harmonic={}".format(harmonicos[h]))
         dss.solution.solve()
-        indice = "node_" + str(node) + "_harmonico_" + str(round(harmonicos[h]*60,1))
+        indice = "node_" + str(node) + "_frequencia_" + str(round(harmonicos[h]*60,1))
         matrixV[indice] = dss.circuit.buses_volts
         matrixY[indice] = dss.circuit.system_y
         dss.monitors.reset_all()
 
-        print("Nó " + node + "Harmonico " + str(round(harmonicos[h]*60,1)))
+        print("Nó " + node + " Frequência " + str(round(harmonicos[h]*60,1)))
 
     matrixV.to_csv("v_node_{}.csv".format(node))
+    print("Matriz V exportada")
     matrixY.to_csv("y_node_{}.csv".format(node))
+    print("Matriz Y exportada")
 
     # Desabilita a fonte de corrente atual
     fontesCorrente = dss.isources.names
