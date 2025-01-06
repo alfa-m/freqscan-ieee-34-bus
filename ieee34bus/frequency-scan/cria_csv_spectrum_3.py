@@ -1,9 +1,9 @@
 import pandas as pd
 import numpy as np
 
-frequencia_inicial = 1200.1
+frequencia_inicial = 1200.5
 frequencia_final = 1800
-passo_frequencia = 0.1
+passo_frequencia = 0.5
 
 harmonico_pd = pd.DataFrame()
 harmonico_pd['harmonico'] = np.arange(frequencia_inicial,(frequencia_final + passo_frequencia),passo_frequencia).tolist()
