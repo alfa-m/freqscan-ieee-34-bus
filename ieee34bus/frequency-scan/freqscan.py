@@ -53,7 +53,7 @@ for j in range(3,len(nomesNos)):
     # Seleciona o modo de solução harmonic
     dss.text("Set mode=harmonic")
     matrixV = pd.DataFrame()
-    matrixY = pd.DataFrame()
+    #matrixY = pd.DataFrame()
 
     # Realiza a solução harmônica iterada
     for h in range(len(harmonicos)):
@@ -61,15 +61,19 @@ for j in range(3,len(nomesNos)):
         dss.solution.solve()
         indice = "node_" + str(node) + "_frequencia_" + str(round(harmonicos[h]*60,1))
         matrixV[indice] = dss.circuit.buses_volts
-        matrixY[indice] = dss.circuit.system_y
+        #matrixY[indice] = dss.circuit.system_y
         dss.monitors.reset_all()
 
         print("Nó " + node + " Frequência " + str(round(harmonicos[h]*60,1)))
 
+        dss.text("Export Y")
+        os.rename("ieee34-1_EXP_Y.csv", "y_node_{}_frequencia_{}.csv".format(node, str(round(harmonicos[h]*60,1))))
+
+
     matrixV.to_csv("v_node_{}.csv".format(node))
     print("Matriz V exportada")
-    matrixY.to_csv("y_node_{}.csv".format(node))
-    print("Matriz Y exportada")
+    #matrixY.to_csv("y_node_{}.csv".format(node))
+    #print("Matriz Y exportada")
 
     # Desabilita a fonte de corrente atual
     fontesCorrente = dss.isources.names
