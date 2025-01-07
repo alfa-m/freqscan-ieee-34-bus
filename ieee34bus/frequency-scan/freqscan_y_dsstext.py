@@ -1,5 +1,4 @@
 import py_dss_interface
-import pandas as pd
 import numpy as np
 import os
 import pathlib
@@ -51,7 +50,6 @@ dss.solution.solve()
 # Seleciona o modo de solução harmonic
 dss.text("Set mode=harmonic")
 
-
 # Realiza a solução harmônica iterada
 for h in range(len(harmonicos)):
     dss.text("Set harmonic={}".format(harmonicos[h]))
@@ -60,7 +58,8 @@ for h in range(len(harmonicos)):
     dss.monitors.reset_all()
 
     print(" Frequência " + str(round(harmonicos[h]*60,1)))
-    matrixY = pd.DataFrame(dss.circuit.system_y)
-    matrixY.to_csv("y_frequencia_{}.csv".format(str(round(harmonicos[h]*60,1))))
+
+    dss.text("Export Y")
+    os.rename("ieee34-1_EXP_Y.csv", "y_dsstext_frequencia_{}.csv".format(str(round(harmonicos[h]*60,1))))
 
 print("Análise harmônica finalizada")
